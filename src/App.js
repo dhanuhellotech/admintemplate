@@ -1,15 +1,9 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import Home from './components/pages/Home';
+
 import Login from './components/pages/Login';
-import Register from './components/pages/Register';
-import Address from './components/pages/address/Address';
-import Admission from './components/pages/admission/Admission';
-import Franchise from './components/pages/franchise/Franchise';
-import Contact from './components/pages/contact/Contact';
-import Enquiry from './components/pages/Enquiry/Enquiry';
-import Events from './components/pages/Events/Events';
-import Blog from './components/pages/blogs/Blog.jsx'
+
+import ProtectedRoutes from './components/ProtectedRoutes.js';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -21,20 +15,13 @@ function App() {
 
   return (
     <div className="App">
-      <Router>
+
         <Routes>
-          <Route path="/" element={isLoggedIn ? <Home /> : <Navigate to="/login" />} />
+          <Route path="/*" element={isLoggedIn ? <ProtectedRoutes /> : <Navigate to="/login" />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/address" element={<Address />} />
-          <Route path="/admission" element={<Admission />} />
-          <Route path="/franchise" element={<Franchise />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/enquiry" element={<Enquiry />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/blogs" element={<Blog />} />
+      
         </Routes>
-      </Router>
+   
     </div>
   );
 }

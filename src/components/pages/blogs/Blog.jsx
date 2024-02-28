@@ -2,7 +2,7 @@ import React,{useState,useEffect}from 'react'
 import axios from 'axios'
 import { useScript } from '../../Customhooks/Script'
 import Sidebar from '../../common/Sidebar'
-import { client } from '../../clientaxios/Clientaxios'
+import { client, imageUrl } from '../../clientaxios/Clientaxios'
 export default function Blog() {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
@@ -19,7 +19,7 @@ export default function Blog() {
   }, []);
 
   const fetchBlogs = () => {
-    axios.get('http://localhost:5678/blogs') // Replace with your actual backend endpoint
+    client.get('/blogs') // Replace with your actual backend endpoint
       .then(response => setBlogs(response.data))
       .catch(error => console.error('Error fetching blogs:', error));
   };
@@ -42,11 +42,11 @@ export default function Blog() {
 
       if (editingBlogId) {
         // If editing, send a request to update the existing blog
-        await axios.put(`http://localhost:5678/blogs/${editingBlogId}`, formData);
+        await client.put(`/blogs/${editingBlogId}`, formData);
         setEditingBlogId(null); // Reset editing state
       } else {
         // If not editing, send a request to create a new blog
-        await axios.post('http://localhost:5678/blogs', formData);
+        await client.post('/blogs', formData);
       }
 
       clearForm();
@@ -74,7 +74,7 @@ export default function Blog() {
   
   const handleDeleteBlog = async (blogId) => {
     try {
-      await axios.delete(`http://localhost:5678/blogs/${blogId}`);
+      await client.delete(`/blogs/${blogId}`);
       fetchBlogs();
     } catch (error) {
       console.error('Error deleting blog:', error);
@@ -201,7 +201,7 @@ export default function Blog() {
         {blogs.map(blog => (
           <div className="col-md-4" key={blog._id}>
             <div className="card mb-3">
-              <img src={`http://localhost:5678/${blog.imageUrl}`} className="card-img-top" alt={blog.title} />
+              <img src={`${imageUrl}/${blog.imageUrl}`} className="card-img-top" alt={blog.title} />
               <div className="card-body">
                 <h5 className="card-title">{blog.title}</h5>
                 <p className="card-text">{blog.category}</p>

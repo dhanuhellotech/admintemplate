@@ -1,0 +1,17 @@
+.left-sidebar {
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    background-color: #fff;
+    z-index: 1000;
+    transition: all 0.3s;
+    overflow-y: auto; /* Enable vertical scrollbar */
+  }
+  
+  .scroll-sidebar {
+    overflow-y: auto; /* Enable vertical scrollbar */
+    height: 100%;
+  }
+  

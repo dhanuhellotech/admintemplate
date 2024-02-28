@@ -1,22 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import {
-  Button,
-  TextField,
-  Container,
-  Typography,
-  Grid,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
-  Divider,
-} from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-
-const Newsletter = () => {
+import React,{useState,useEffect}from 'react'
+import axios from 'axios'
+import { useScript } from '../../Customhooks/Script'
+import Sidebar from '../../common/Sidebar'
+import { client, imageUrl } from '../../clientaxios/Clientaxios'
+export default function Newsletter() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [file, setFile] = useState(null);
@@ -39,11 +26,11 @@ const Newsletter = () => {
     
     if (editingPDFId) {
       // If editing, send a request to update the existing PDF
-      await axios.put(`http://localhost:5678/newsletter/${editingPDFId}`, formData);
+      await client.put(`/newsletter/${editingPDFId}`, formData);
       setEditingPDFId(null); // Reset editing state
     } else {
       // If not editing, send a request to create a new PDF
-      const response = await axios.post('http://localhost:5678/newsletter/upload', formData, {
+      const response = await client.post('/newsletter/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -66,7 +53,7 @@ const Newsletter = () => {
 
   const fetchUploadedDetails = async () => {
     try {
-      const response = await axios.get('http://localhost:5678/newsletter');
+      const response = await client.get('/newsletter');
       setUploadedDetails(response.data);
     } catch (error) {
       console.error('Error fetching uploaded details:', error);
@@ -79,7 +66,7 @@ const Newsletter = () => {
 
   const handleDeletePDF = async (id) => {
     try {
-      await axios.delete(`http://localhost:5678/newsletter/${id}`);
+      await client.delete(`/newsletter/${id}`);
       fetchUploadedDetails();
     } catch (error) {
       console.error('Error deleting PDF:', error);
@@ -104,78 +91,116 @@ const Newsletter = () => {
     setEditingPDFId(null);
   };
 
+  useScript('assets/libs/jquery/dist/jquery.min.js');
+  useScript('assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js');
+  useScript('assets/js/sidebarmenu.js');
+  useScript('assets/js/app.min.js');
+
+  useScript('assets/libs/simplebar/dist/simplebar.js');
+  useScript('assets/js/dashboard.js');
+  useScript('assets/libs/apexcharts/dist/apexcharts.min.js')
+  
+
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        Upload PDF
-      </Typography>
+    <div>
+ <div className="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+  {/* Sidebar Start */}
+<Sidebar/>
+  {/*  Sidebar End */}
+  {/*  Main wrapper */}
+  <div className="body-wrapper">
+    {/*  Header Start */}
+    <header className="app-header">
+      <nav className="navbar navbar-expand-lg navbar-light">
+        <ul className="navbar-nav">
+          <li className="nav-item d-block d-xl-none">
+            <a className="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
+              <i className="ti ti-menu-2" />
+            </a>
+          </li>
+          <li className="nav-item">
+            <a className="nav-link nav-icon-hover" href="javascript:void(0)">
+              <i className="ti ti-bell-ringing" />
+              <div className="notification bg-primary rounded-circle" />
+            </a>
+          </li>
+        </ul>
+        <div className="navbar-collapse justify-content-end px-0" id="navbarNav">
+          <ul className="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+            <a href="https://adminmart.com/product/modernize-free-bootstrap-admin-dashboard/" target="_blank" className="btn btn-primary">Download Free</a>
+            <li className="nav-item dropdown">
+              <a className="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="../assets/images/profile/user-1.jpg" alt width={35} height={35} className="rounded-circle" />
+              </a>
+              <div className="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                <div className="message-body">
+                  <a href="javascript:void(0)" className="d-flex align-items-center gap-2 dropdown-item">
+                    <i className="ti ti-user fs-6" />
+                    <p className="mb-0 fs-3">My Profile</p>
+                  </a>
+                  <a href="javascript:void(0)" className="d-flex align-items-center gap-2 dropdown-item">
+                    <i className="ti ti-mail fs-6" />
+                    <p className="mb-0 fs-3">My Account</p>
+                  </a>
+                  <a href="javascript:void(0)" className="d-flex align-items-center gap-2 dropdown-item">
+                    <i className="ti ti-list-check fs-6" />
+                    <p className="mb-0 fs-3">My Task</p>
+                  </a>
+                  <a href="./authentication-login.html" className="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    {/*  Header End */}
+    <div className="container-fluid">
+    <div className="container">
+      <h4>Upload PDF</h4>
       <form onSubmit={handleFormSubmit}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField
-              label="Title"
-              variant="outlined"
-              fullWidth
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Description"
-              variant="outlined"
-              fullWidth
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <Grid item xs={12}>
-  <TextField
-    label="New Filename"
-    variant="outlined"
-    fullWidth
-    value={newFilename}
-    onChange={(e) => setNewFilename(e.target.value)} // Handle new filename input change
-  />
-</Grid> 
-          </Grid>
-          <Grid item xs={12}>
-            <input type="file" accept=".pdf" onChange={handleFileChange} />
-          </Grid>
-          <Grid item xs={12}>
-            <Button type="submit" variant="contained" color="primary">
-              {editingPDFId ? 'Update' : 'Upload'}
-            </Button>
-          </Grid>
-        </Grid>
+        <div className="mb-3">
+          <label className="form-label">Title</label>
+          <input type="text" className="form-control" value={title} onChange={(e) => setTitle(e.target.value)} />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Description</label>
+          <textarea className="form-control" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
+        </div>
+        <div className="mb-3">
+          <label className="form-label">New Filename</label>
+          <input type="text" className="form-control" value={newFilename} onChange={(e) => setNewFilename(e.target.value)} />
+        </div>
+        <div className="mb-3">
+          <input type="file" className="form-control" accept=".pdf" onChange={handleFileChange} />
+        </div>
+        <div className="mb-3">
+          <button type="submit" className="btn btn-primary">{editingPDFId ? 'Update' : 'Upload'}</button>
+        </div>
       </form>
-      
-      <Typography variant="h5" gutterBottom style={{ marginTop: '20px' }}>
-        Uploaded PDFs
-      </Typography>
-      <List>
+
+      <h5 style={{ marginTop: '20px' }}>Uploaded PDFs</h5>
+      <ul className="list-group">
         {uploadedDetails.map((detail, index) => (
           <React.Fragment key={index}>
-            <ListItem>
-              <ListItemText
-                primary={detail.title}
-                secondary={detail.description}
-              />
-              <ListItemText primary={detail.filename} />
-              <ListItemSecondaryAction>
-                <IconButton edge="end" aria-label="delete" onClick={() => handleDeletePDF(detail._id)}>
-                  <DeleteIcon />
-                </IconButton>
-                <IconButton edge="end" aria-label="edit" onClick={() => handleEditPDF(detail._id)}>
-                  <EditIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-            <Divider />
+            <li className="list-group-item">
+              <div>Title: {detail.title}</div>
+              <div>Description: {detail.description}</div>
+              <div>Filename: {detail.filename}</div>
+              <div>
+                <button className="btn btn-danger me-2" onClick={() => handleDeletePDF(detail._id)}>Delete</button>
+                <button className="btn btn-primary" onClick={() => handleEditPDF(detail._id)}>Edit</button>
+              </div>
+            </li>
           </React.Fragment>
         ))}
-      </List>
-    </Container>
-  );
-};
+      </ul>
+    </div>
+</div>
+  </div>
+</div>
 
-export default Newsletter;
+    </div>
+  )
+}
+

@@ -1,6 +1,24 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
+import * as Yup from 'yup';
+import {Formik} from 'formik';
+import axios from 'axios';
+import { client,imageUrl } from '../clientaxios/Clientaxios';
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  FormFeedback,
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter
+} from 'reactstrap';
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,7 +30,7 @@ const Login = ({ onLogin }) => {
 
     // Perform authentication logic here
     const validEmail = 'gpreschool@gmail.com';
-    const validPassword = '123456';
+    const validPassword = 'gpreschool@gmail.com';
 
     if (email === validEmail && password === validPassword) {
       console.log("Login successful.");
@@ -24,7 +42,30 @@ const Login = ({ onLogin }) => {
   };
 
   console.log("Rendering Login component.");
+  const [modalOpen, setModalOpen] = useState(false);
 
+  const toggleModal = () => {
+    setModalOpen(!modalOpen);
+  };
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+      setOpen(true);
+  };
+
+  const handleClose = () => {
+      setOpen(false);
+  };
+  const handleForgotPassword = async (values) => {
+    try {
+        const response = await client.post('/api/send-reset-email', { email: values.email });
+        alert(response.data.message); // Display success message from the server
+        handleClose();
+    } catch (error) {
+        console.error('Error sending reset password email:', error.message);
+        alert('Failed to send reset password email. Please try again later.');
+    }
+};
   return (
     <div className="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
       <div className="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
@@ -34,7 +75,8 @@ const Login = ({ onLogin }) => {
               <div className="card mb-0">
                 <div className="card-body">
                   <Link to="/" className="text-nowrap logo-img text-center d-block py-3 w-100">
-                    <img src="../assets/images/logos/dark-logo.svg" width={180} alt="Logo" />
+                    {/* <img src="../assets/images/logos/dark-logo.svg" width={180} alt="Logo" /> */}
+                    <h1>Welcome Admin</h1>
                   </Link>
                   <h2 className="text-center mb-4">Login</h2>
                   {error && <div className="alert alert-danger">{error}</div>}
@@ -47,7 +89,49 @@ const Login = ({ onLogin }) => {
                     <input type="password" className="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                   </div>
                   <button type="button" className="btn btn-primary w-100 mb-3" onClick={handleLogin}>Login</button>
-                  <p className="text-center">Don't have an account? <Link to="/register">Register</Link></p>
+                  <p className="text-center" style={{ cursor: 'pointer' }} onClick={toggleModal}>
+            Forgot Password?
+          </p>
+          <Modal isOpen={modalOpen} toggle={toggleModal}>
+            <ModalHeader toggle={toggleModal}>Forgot Password?</ModalHeader>
+            <ModalBody>
+              <Formik
+                initialValues={{ email: '' }}
+                validationSchema={Yup.object().shape({
+                  email: Yup.string().email('Invalid email').required('Email is required')
+                })}
+                onSubmit={(values) => handleForgotPassword(values)}
+              >
+                {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
+                  <Form onSubmit={handleSubmit}>
+                    <FormGroup>
+                      <Label for="forgot-email">Email Address</Label>
+                      <Input
+                        type="email"
+                        name="email"
+                        id="forgot-email"
+                        placeholder="Enter your email address"
+                        value={values.email}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        invalid={touched.email && !!errors.email}
+                      />
+                      <FormFeedback>{errors.email}</FormFeedback>
+                    </FormGroup>
+                    <ModalFooter>
+                      <Button color="secondary" onClick={toggleModal}>
+                        Cancel
+                      </Button>
+                      <Button type="submit" color="primary">
+                        Send Reset Email
+                      </Button>
+                    </ModalFooter>
+                  </Form>
+                )}
+              </Formik>
+            </ModalBody>
+          </Modal>
+ 
                 </div>
               </div>
             </div>

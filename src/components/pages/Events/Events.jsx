@@ -66,11 +66,7 @@ const Events = () => {
 
       <Sidebar />
       <div className="body-wrapper">
-        <header className="app-header">
-          <nav className="navbar navbar-expand-lg navbar-light">
-            {/* Navbar content */}
-          </nav>
-        </header>
+     
         <div className="container-fluid">
           <div className="container">
             <div className="row">
